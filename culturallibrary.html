@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library | NepCulture</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .library-layout { display: flex; height: calc(100vh - 60px); }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px; background: #111;
+            padding: 30px 20px; border-right: 1px solid var(--border-light);
+            overflow-y: auto; flex-shrink: 0;
+        }
+        .sidebar h4 { color: var(--gold); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+        .filter-item {
+            display: block; color: var(--text-muted); padding: 6px 0;
+            cursor: pointer; transition: var(--transition); font-size: 0.9rem; border-radius: 4px;
+        }
+        .filter-item:hover  { color: white; padding-left: 6px; }
+        .filter-item:focus  { outline: 2px solid var(--accent-1); outline-offset: 4px; }
+        .filter-group { margin-bottom: 28px; }
+
+        /* Main content */
+        .main-content { flex: 1; padding: 36px 40px; overflow-y: auto; }
+
+        .search-bar {
+            width: 100%; padding: 14px 20px;
+            background: rgba(0,0,0,0.4); border: 1px solid #333;
+            color: white; border-radius: 30px; font-size: 1rem;
+            margin-bottom: 30px; outline: none; transition: border-color 0.2s;
+        }
+        .search-bar:focus { border-color: var(--gold); }
+
+        /* Book grid */
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 24px; }
+        .book-card {
+            background: var(--glass-surface);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            height: 260px; border-radius: 10px;
+            border: 1px solid var(--glass-border); position: relative; overflow: hidden;
+            cursor: pointer; transition: var(--transition);
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; text-align: center; padding: 20px;
+        }
+        .book-card:hover         { transform: translateY(-8px); border-color: var(--gold); box-shadow: var(--shadow); }
+        .book-card:focus-visible { outline: 2px solid var(--accent-1); outline-offset: 4px; }
+        .cover { font-size: 3rem; margin-bottom: 14px; }
+
+        /* Hover overlay */
+        .book-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.92);
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; opacity: 0; transition: var(--transition); padding: 18px;
+        }
+        .book-card:hover .book-overlay,
+        .book-card:focus .book-overlay { opacity: 1; }
+        .book-overlay p { color: var(--gold); font-size: 0.78rem; margin: 4px 0; }
+        .book-overlay .btn-outline { margin-top: 12px; font-size: 0.75rem; padding: 5px 14px; border-radius: 20px; }
+        .book-overlay .view-detail-btn { border-color: var(--accent-1); color: var(--accent-1); }
+
+        /* ── Chatbot ── */
+        .chat-section {
+            background: var(--glass-surface);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 14px; border: 1px solid var(--glass-border);
+            margin-top: 50px; overflow: hidden;
+            display: flex; flex-direction: column; height: 460px;
+            box-shadow: var(--glass-shadow);
+        }
+        .chat-header {
+            background: rgba(8,8,12,0.7);
+            backdrop-filter: blur(10px);
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .chat-status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 6px #22c55e;
+            flex-shrink: 0;
+        }
+        .chat-body {
+            flex: 1; padding: 20px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+        .msg { max-width: 82%; padding: 12px 18px; border-radius: 18px; font-size: 0.92rem; line-height: 1.6; }
+        .msg.bot  {
+            background: rgba(22, 22, 25, 0.85);
+            backdrop-filter: blur(8px);
+            align-self: flex-start; border-bottom-left-radius: 4px;
+            border: 1px solid var(--glass-border);
+            animation: fadeInUp 0.28s ease;
+        }
+        .msg.user { background: var(--crimson); align-self: flex-end; border-bottom-right-radius: 4px; color: white; animation: fadeInUp 0.2s ease; }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: none; align-self: flex-start;
+            background: rgba(22,22,25,0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            padding: 12px 18px; border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            gap: 4px; align-items: center;
+        }
+        .typing-indicator.visible { display: flex; }
+
+        .chat-presets {
+            display: flex; gap: 10px; padding: 12px 16px;
+            background: rgba(8,8,12,0.5); border-top: 1px solid var(--glass-border);
+            overflow-x: auto;
+        }
+        .preset-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid #444; color: var(--gold);
+            padding: 7px 14px; border-radius: 20px; font-size: 0.78rem;
+            cursor: pointer; white-space: nowrap; transition: var(--transition);
+        }
+        .preset-btn:hover { background: var(--gold); color: #000; }
+        .preset-btn:focus-visible { outline: 2px solid var(--accent-1); }
+
+        .chat-input-row {
+            display: flex; gap: 10px; padding: 14px 16px;
+            background: rgba(8,8,12,0.7); border-top: 1px solid var(--glass-border);
+        }
+        .chat-input-row input {
+            flex: 1; background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+            color: white; padding: 10px 16px; border-radius: 20px; outline: none; font-size: 0.9rem;
+        }
+        .chat-input-row input:focus { border-color: var(--accent-1); }
+        .chat-input-row button {
+            background: var(--accent-1); border: none; color: white;
+            padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 0.88rem;
+            transition: var(--transition);
+        }
+        .chat-input-row button:hover { background: #5800d4; }
+    </style>
+</head>
+<body>
+    <div class="nav" role="navigation" aria-label="Site navigation">
+        <a href="index.html" class="serif" style="font-size: 1.5rem; color: var(--gold); text-decoration:none;">NepCulture</a>
+        <a href="myfavourites.html" class="btn-outline" style="font-size: 0.9rem; text-decoration:none;">My Identity</a>
+    </div>
+
+    <div class="library-layout">
+
+        <!-- Sidebar filters -->
+        <aside class="sidebar" role="complementary" aria-label="Library filters">
+            <div class="filter-group">
+                <h4>Era</h4>
+                <span class="filter-item" tabindex="0" role="button" aria-label="Filter by Ancient era">Ancient</span>
+                <span class="filter-item" tabindex="0" role="button" aria-label="Filter by Rana Period">Rana Period</span>
+                <span class="filter-item" tabindex="0" role="button" aria-label="Filter by Modern era">Modern</span>
+                <span class="filter-item" tabindex="0" role="button" aria-label="Filter by Contemporary era">Contemporary</span>
+            </div>
+            <div class="filter-group">
+                <h4>Genre</h4>
+                <span class="filter-item" tabindex="0" role="button" aria-label="Filter by Folklore">Folklore</span>
+                <span class="filter-item" tabindex="0" role="button" aria-label="Filter by Poetry">Poetry</span>
+                <span class="filter-item" tabindex="0" role="button" aria-label="Filter by Fiction">Fiction</span>
+                <span class="filter-item" tabindex="0" role="button" aria-label="Filter by Historical Archives">Historical Archives</span>
+            </div>
+        </aside>
+
+        <!-- Main area -->
+        <main class="main-content">
+            <input
+                type="text"
+                id="search-input"
+                class="search-bar"
+                placeholder="Search archives by title, author, era, or theme…"
+                aria-label="Search the library"
+            >
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 22px; flex-wrap:wrap; gap:10px;">
+                <h2 class="serif gold-text">The Archives</h2>
+                <span style="color:var(--text-muted); font-size:0.9rem;" id="result-count" role="status" aria-live="polite">Showing 6 works</span>
+            </div>
+
+            <!-- Book grid -->
+            <div class="book-grid" id="book-grid" role="list" aria-label="Archive books"></div>
+
+            <!-- AI Cultural Guide chatbot -->
+            <div class="chat-section" role="region" aria-label="Cultural AI Guide">
+                <div class="chat-header">
+                    <span style="font-size: 1.5rem;" aria-hidden="true">🤖</span>
+                    <div style="flex:1;">
+                        <h3 style="font-size: 1rem; margin:0;">Cultural AI Guide</h3>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin:0;">Trained on verified heritage archives.</p>
+                    </div>
+                    <div class="chat-status-dot" title="Online" aria-label="Guide is online"></div>
+                </div>
+
+                <div class="chat-body" id="chat-body" role="log" aria-label="Conversation" aria-live="polite">
+                    <div class="msg bot">Namaste! I am your guide to Nepali heritage. Ask me about a specific book, historical era, musical tradition, or cultural symbol.</div>
+                    <!-- Typing indicator -->
+                    <div class="typing-indicator" id="typing-indicator" aria-live="polite" aria-label="Guide is thinking">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+
+                <!-- Preset question buttons -->
+                <div class="chat-presets" role="toolbar" aria-label="Quick questions">
+                    <button class="preset-btn" onclick="triggerChat('Explain the significance of Muna Madan')" aria-label="Ask about Muna Madan">Explain Muna Madan</button>
+                    <button class="preset-btn" onclick="triggerChat('What is the origin of the Sarangi?')"      aria-label="Ask about the Sarangi">Origin of Sarangi</button>
+                    <button class="preset-btn" onclick="triggerChat('Tell me about Rana era architecture')"     aria-label="Ask about Rana architecture">Rana Architecture</button>
+                    <button class="preset-btn" onclick="triggerChat('Tell me about Karnali Blues')"             aria-label="Ask about Karnali Blues">Karnali Blues</button>
+                    <button class="preset-btn" onclick="triggerChat('Tell me about Palpasa Cafe')"              aria-label="Ask about Palpasa Cafe">Palpasa Cafe</button>
+                    <button class="preset-btn" onclick="triggerChat('Give me a brief history of Nepal')"        aria-label="Ask about Nepal history">Nepal History</button>
+                    <button class="preset-btn" onclick="triggerChat('Who is Parijat?')"                        aria-label="Ask about Parijat">Parijat</button>
+                </div>
+
+                <!-- Free-type input -->
+                <div class="chat-input-row">
+                    <input
+                        type="text"
+                        id="chat-free-input"
+                        placeholder="Ask about any aspect of Nepali culture…"
+                        aria-label="Ask the cultural guide"
+                    >
+                    <button id="chat-send-btn" aria-label="Send question">Ask</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/library.js"></script>
+    <script>
+      if (!NepAuth.requireAuth()) { /* redirected */ }
+    </script>
+
+    <script>
+      (function () {
+        var input   = document.getElementById('chat-free-input');
+        var sendBtn = document.getElementById('chat-send-btn');
+        function sendChat() {
+          var q = input ? input.value.trim() : '';
+          if (!q) return;
+          if (typeof triggerChat === 'function') triggerChat(q);
+          input.value = '';
+        }
+        if (sendBtn) sendBtn.addEventListener('click', sendChat);
+        if (input)   input.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendChat(); });
+      })();
+    </script>
+</body>
+</html>

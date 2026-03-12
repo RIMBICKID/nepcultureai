@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NepCulture | The Heritage Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ── Reset for full-page scroll ── */
+        body { overflow-x: hidden; overflow-y: auto; }
+
+        /* ═══════════════════════════════════════════
+           NAV
+        ═══════════════════════════════════════════ */
+        .top-nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 900;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 48px;
+            background: rgba(12,12,15,0.7);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+        }
+        .top-nav .brand { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--gold); text-decoration: none; }
+        .top-nav .nav-links { display: flex; gap: 28px; align-items: center; }
+        .top-nav .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+        .top-nav .nav-links a:hover { color: var(--gold); }
+        .top-nav .nav-cta { display: flex; gap: 12px; }
+        .btn-nav-login { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; text-decoration: none; transition: all 0.2s; }
+        .btn-nav-login:hover { background: var(--gold); color: #000; }
+        .btn-nav-signup { background: var(--crimson); border: none; color: white; padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; text-decoration: none; transition: all 0.2s; }
+        .btn-nav-signup:hover { background: #b01030; }
+
+        /* ═══════════════════════════════════════════
+           SECTION 1: HERO
+        ═══════════════════════════════════════════ */
+        .hero {
+            min-height: 100vh;
+            background:
+                linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(12,12,15,1) 100%),
+                url('https://images.unsplash.com/photo-1544641620-63eb077e68fa?q=80&w=2000') center/cover no-repeat;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 120px 24px 80px;
+            position: relative; overflow: hidden;
+        }
+        /* Mandala overlay */
+        .hero::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Ccircle cx='300' cy='300' r='280' stroke='%23DAA520' stroke-width='0.4' fill='none' opacity='0.15'/%3E%3Ccircle cx='300' cy='300' r='220' stroke='%23DAA520' stroke-width='0.4' fill='none' opacity='0.12'/%3E%3Ccircle cx='300' cy='300' r='160' stroke='%23DAA520' stroke-width='0.3' fill='none' opacity='0.10'/%3E%3Ccircle cx='300' cy='300' r='100' stroke='%23DAA520' stroke-width='0.3' fill='none' opacity='0.08'/%3E%3Cline x1='300' y1='20' x2='300' y2='580' stroke='%23DAA520' stroke-width='0.2' opacity='0.08'/%3E%3Cline x1='20' y1='300' x2='580' y2='300' stroke='%23DAA520' stroke-width='0.2' opacity='0.08'/%3E%3C/svg%3E");
+            background-size: 600px 600px;
+            background-position: center;
+            pointer-events: none;
+            animation: rotateSlow 60s linear infinite;
+        }
+        @keyframes rotateSlow { to { transform: rotate(360deg); } }
+
+        .hero-eyebrow {
+            font-size: 0.78rem; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--gold); margin-bottom: 18px;
+            animation: fadeUp 0.8s 0.1s both;
+        }
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(3.2rem, 9vw, 6.5rem);
+            letter-spacing: 6px;
+            background: linear-gradient(120deg, #DAA520 0%, #F5E27B 45%, #c49a14 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            margin-bottom: 8px; line-height: 1.1;
+            animation: fadeUp 0.8s 0.25s both;
+        }
+        .hero-sub {
+            font-size: clamp(0.95rem, 2.2vw, 1.2rem); color: var(--text-muted);
+            max-width: 560px; line-height: 1.9; margin: 0 auto 18px;
+            animation: fadeUp 0.8s 0.4s both;
+        }
+        .hero-divider {
+            width: 80px; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0 auto 40px;
+            animation: fadeUp 0.8s 0.5s both;
+        }
+        .hero-cta {
+            display: flex; gap: 18px; justify-content: center; flex-wrap: wrap;
+            animation: fadeUp 0.8s 0.6s both;
+        }
+        .btn-hero-primary {
+            background: var(--crimson); color: white; padding: 15px 36px;
+            border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 0.95rem;
+            transition: all 0.28s ease; border: none;
+        }
+        .btn-hero-primary:hover { background: #b01030; box-shadow: 0 0 30px rgba(220,20,60,0.5); transform: translateY(-2px); }
+        .btn-hero-secondary {
+            background: transparent; color: var(--gold); padding: 15px 36px;
+            border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 0.95rem;
+            transition: all 0.28s ease; border: 1px solid var(--gold);
+        }
+        .btn-hero-secondary:hover { background: var(--gold); color: #000; transform: translateY(-2px); }
+
+        .hero-stats {
+            display: flex; gap: 48px; justify-content: center; margin-top: 64px; flex-wrap: wrap;
+            animation: fadeUp 0.8s 0.75s both;
+        }
+        .hero-stat { text-align: center; }
+        .hero-stat .num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); }
+        .hero-stat .lbl { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
+
+        @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+        /* ═══════════════════════════════════════════
+           SECTION 2: CORE PLATFORM
+        ═══════════════════════════════════════════ */
+        .section { padding: 100px 24px; }
+        .section-inner { max-width: 1200px; margin: 0 auto; }
+        .section-label {
+            font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--accent-1); margin-bottom: 12px;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.6rem);
+            color: var(--text-main); margin-bottom: 16px; line-height: 1.25;
+        }
+        .section-sub { color: var(--text-muted); font-size: 1rem; max-width: 560px; line-height: 1.8; margin-bottom: 56px; }
+
+        .platform-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+        .platform-card {
+            background: var(--glass-surface); backdrop-filter: blur(14px);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+            padding: 40px 32px; text-decoration: none; color: var(--text-main);
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .platform-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(110,0,255,0.06), transparent);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .platform-card:hover { transform: translateY(-8px); border-color: var(--gold); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .platform-card:hover::before { opacity: 1; }
+        .card-icon { font-size: 2.8rem; margin-bottom: 20px; display: block; }
+        .card-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-1); margin-bottom: 10px; }
+        .card-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); margin-bottom: 12px; }
+        .card-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 20px; }
+        .card-arrow { color: var(--gold); font-size: 1.2rem; transition: transform 0.2s; }
+        .platform-card:hover .card-arrow { transform: translateX(6px); }
+
+        /* ═══════════════════════════════════════════
+           SECTION 3: TODAY IN NEPALI CULTURE
+        ═══════════════════════════════════════════ */
+        .today-section { background: rgba(8,8,12,0.8); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); }
+        .today-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+        .today-fact-card {
+            background: var(--glass-surface); backdrop-filter: blur(14px);
+            border: 1px solid var(--glass-border); border-radius: 16px; padding: 36px;
+        }
+        .fact-date { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+        .fact-category {
+            display: inline-block; font-size: 0.68rem; padding: 4px 12px; border-radius: 20px;
+            background: rgba(218,165,32,0.12); border: 1px solid rgba(218,165,32,0.3); color: var(--gold);
+            margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .fact-text { font-family: 'Playfair Display', serif; font-size: 1.2rem; line-height: 1.7; color: var(--text-main); margin-bottom: 12px; }
+        .fact-source { font-size: 0.8rem; color: var(--text-muted); }
+        .today-list { display: flex; flex-direction: column; gap: 16px; }
+        .today-item {
+            display: flex; gap: 16px; align-items: flex-start;
+            padding: 16px; background: var(--glass-surface); border-radius: 10px;
+            border: 1px solid var(--glass-border); cursor: pointer; transition: all 0.2s;
+        }
+        .today-item:hover { border-color: var(--gold); }
+        .today-item-icon { font-size: 1.6rem; flex-shrink: 0; }
+        .today-item h4 { font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px; }
+        .today-item p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+        @media (max-width: 768px) { .today-grid { grid-template-columns: 1fr; } }
+
+        /* ═══════════════════════════════════════════
+           SECTION 4: CULTURAL CATEGORIES
+        ═══════════════════════════════════════════ */
+        .categories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+        .category-chip {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 24px 16px; background: var(--glass-surface); border: 1px solid var(--glass-border);
+            border-radius: 14px; text-decoration: none; color: var(--text-main);
+            transition: all 0.25s; text-align: center; gap: 10px;
+        }
+        .category-chip:hover { border-color: var(--gold); transform: translateY(-4px); background: rgba(218,165,32,0.06); }
+        .category-chip .cat-icon { font-size: 2rem; }
+        .category-chip .cat-name { font-size: 0.82rem; color: var(--text-muted); }
+        .category-chip:hover .cat-name { color: var(--gold); }
+
+        /* ═══════════════════════════════════════════
+           SECTION 5: AI CREATIONS SHOWCASE
+        ═══════════════════════════════════════════ */
+        .showcase-section { background: linear-gradient(180deg, var(--bg-dark) 0%, rgba(110,0,255,0.04) 50%, var(--bg-dark) 100%); }
+        .showcase-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .showcase-card {
+            background: var(--glass-surface); border: 1px solid var(--glass-border);
+            border-radius: 14px; padding: 24px; position: relative; overflow: hidden;
+        }
+        .showcase-card::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-1), var(--gold));
+        }
+        .sc-genre { font-size: 0.68rem; color: var(--accent-1); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .sc-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text-main); margin-bottom: 6px; }
+        .sc-meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px; }
+        .sc-tag { display: inline-block; font-size: 0.68rem; padding: 3px 9px; border-radius: 10px; background: rgba(110,0,255,0.15); border: 1px solid rgba(110,0,255,0.3); color: #9b6dff; margin-right: 5px; }
+        .sc-play {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--text-muted); font-size: 0.82rem; margin-top: 14px;
+            background: none; border: 1px solid var(--glass-border); padding: 7px 14px;
+            border-radius: 20px; cursor: pointer; transition: all 0.2s;
+        }
+        .sc-play:hover { border-color: var(--gold); color: var(--gold); }
+
+        /* ═══════════════════════════════════════════
+           SECTION 6: CULTURAL QUOTE
+        ═══════════════════════════════════════════ */
+        .quote-section {
+            text-align: center; padding: 100px 24px;
+            background:
+                radial-gradient(ellipse at center, rgba(218,165,32,0.06) 0%, transparent 70%),
+                var(--bg-dark);
+        }
+        .quote-icon { font-size: 3rem; color: var(--gold); opacity: 0.4; margin-bottom: 24px; display: block; }
+        .quote-text {
+            font-family: 'Playfair Display', serif; font-style: italic;
+            font-size: clamp(1.4rem, 3vw, 2rem); color: var(--text-main);
+            max-width: 800px; margin: 0 auto 24px; line-height: 1.7;
+        }
+        .quote-attr { font-size: 0.88rem; color: var(--gold); letter-spacing: 1px; }
+
+        /* ═══════════════════════════════════════════
+           SECTION 7: COMMUNITY
+        ═══════════════════════════════════════════ */
+        .community-section { background: rgba(8,8,12,0.9); padding: 100px 24px; }
+        .community-inner { max-width: 900px; margin: 0 auto; }
+        .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 48px; }
+        .community-card {
+            background: var(--glass-surface); border: 1px solid var(--glass-border);
+            border-radius: 14px; padding: 28px 24px; text-align: center;
+        }
+        .community-card .cc-icon { font-size: 2.2rem; margin-bottom: 14px; display: block; }
+        .community-card h3 { color: var(--gold); font-family: 'Playfair Display', serif; margin-bottom: 10px; font-size: 1.1rem; }
+        .community-card p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; }
+
+        /* ═══════════════════════════════════════════
+           SECTION 8: FOOTER
+        ═══════════════════════════════════════════ */
+        .site-footer {
+            background: #060608; border-top: 1px solid var(--glass-border);
+            padding: 60px 48px 36px;
+        }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; max-width: 1200px; margin: 0 auto; }
+        .footer-brand .fb-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); margin-bottom: 12px; }
+        .footer-brand p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.7; max-width: 280px; }
+        .footer-col h4 { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 18px; }
+        .footer-col a { display: block; color: #888; font-size: 0.88rem; text-decoration: none; margin-bottom: 10px; transition: color 0.2s; }
+        .footer-col a:hover { color: var(--gold); }
+        .footer-bottom {
+            max-width: 1200px; margin: 48px auto 0;
+            padding-top: 24px; border-top: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 12px;
+        }
+        .footer-credits span { color: var(--gold); }
+
+        @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .footer-grid { grid-template-columns: 1fr; } .top-nav .nav-links { display: none; } }
+
+        /* Scroll-reveal utility */
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<nav class="top-nav" id="top-nav">
+    <a href="index.html" class="brand">NepCulture</a>
+    <div class="nav-links">
+        <a href="music.html">Studio</a>
+        <a href="culturallibrary.html">Library</a>
+        <a href="myfavourites.html">My Identity</a>
+    </div>
+    <div class="nav-cta" id="nav-cta">
+        <a href="login.html" class="btn-nav-login">Sign In</a>
+        <a href="login.html?r=music.html" class="btn-nav-signup">Get Started</a>
+    </div>
+</nav>
+
+<!-- ═══════════════════ 1. HERO ═══════════════════ -->
+<section class="hero" id="home">
+    <p class="hero-eyebrow">Nepal's Digital Cultural Heritage Platform</p>
+    <h1>NEPCULTURE</h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">The bridge between ancient heritage and digital eternity. Create Nepali music with AI, explore centuries of literature, and preserve your cultural identity.</p>
+    <div class="hero-cta">
+        <a href="music.html" class="btn-hero-primary">🎚️ Open AI Studio</a>
+        <a href="culturallibrary.html" class="btn-hero-secondary">📜 Explore Library</a>
+    </div>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="num">500+</div><div class="lbl">Cultural Works</div></div>
+        <div class="hero-stat"><div class="num">12</div><div class="lbl">Music Genres</div></div>
+        <div class="hero-stat"><div class="num">∞</div><div class="lbl">Heritage Preserved</div></div>
+    </div>
+</section>
+
+<!-- ═══════════════════ 2. CORE PLATFORM ═══════════════════ -->
+<section class="section" id="platform">
+    <div class="section-inner reveal">
+        <p class="section-label">Core Platform</p>
+        <h2 class="section-title">Three Pillars of Nepali Heritage</h2>
+        <p class="section-sub">Everything you need to create, discover, and celebrate Nepali culture in one place.</p>
+        <div class="platform-grid">
+            <a href="music.html" class="platform-card">
+                <span class="card-icon">🎚️</span>
+                <p class="card-label">AI-Powered</p>
+                <h3 class="card-title">The Studio</h3>
+                <p class="card-desc">Compose original Nepali music across Hip Hop, Folk, Adhunik, Lofi, and 10+ other genres. AI-assisted lyrics, mood analysis, and professional rendering.</p>
+                <span class="card-arrow">→</span>
+            </a>
+            <a href="culturallibrary.html" class="platform-card">
+                <span class="card-icon">📜</span>
+                <p class="card-label">Heritage Archives</p>
+                <h3 class="card-title">The Library</h3>
+                <p class="card-desc">Explore centuries of Nepali literature, poetry, folklore, and history. An AI cultural guide answers any question about Nepali heritage with doctoral precision.</p>
+                <span class="card-arrow">→</span>
+            </a>
+            <a href="myfavourites.html" class="platform-card">
+                <span class="card-icon">🔖</span>
+                <p class="card-label">Personal</p>
+                <h3 class="card-title">My Identity</h3>
+                <p class="card-desc">Your cultural footprint — favorited tracks, archived books, custom tags, and notes. Build your personal Nepali heritage collection over time.</p>
+                <span class="card-arrow">→</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ 3. TODAY IN NEPALI CULTURE ═══════════════════ -->
+<section class="section today-section" id="today">
+    <div class="section-inner reveal">
+        <p class="section-label">Discovery Engine</p>
+        <h2 class="section-title">Today in Nepali Culture</h2>
+        <p class="section-sub">A living window into heritage — stories, facts, and wisdom drawn fresh each day.</p>
+        <div class="today-grid">
+            <div class="today-fact-card">
+                <p class="fact-date" id="today-date"></p>
+                <span class="fact-category" id="fact-category">Loading…</span>
+                <p class="fact-text" id="fact-text"></p>
+                <p class="fact-source" id="fact-source"></p>
+            </div>
+            <div class="today-list" id="today-list"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ 4. CULTURAL CATEGORIES ═══════════════════ -->
+<section class="section" id="categories">
+    <div class="section-inner reveal">
+        <p class="section-label">Explore</p>
+        <h2 class="section-title">Cultural Categories</h2>
+        <p class="section-sub">Dive into any corner of Nepal's rich and diverse heritage.</p>
+        <div class="categories-grid">
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🏔️</span><span class="cat-name">Geography</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🪘</span><span class="cat-name">Music</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🎋</span><span class="cat-name">Instruments</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🍛</span><span class="cat-name">Food &amp; Cuisine</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">📖</span><span class="cat-name">Literature</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🏛️</span><span class="cat-name">Architecture</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🗣️</span><span class="cat-name">Languages</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🕉️</span><span class="cat-name">Mythology</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🎭</span><span class="cat-name">Festivals</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🧵</span><span class="cat-name">Textiles &amp; Art</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">⚔️</span><span class="cat-name">History</span></a>
+            <a href="culturallibrary.html" class="category-chip"><span class="cat-icon">🌿</span><span class="cat-name">Ayurveda</span></a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ 5. AI CREATIONS SHOWCASE ═══════════════════ -->
+<section class="section showcase-section" id="showcase">
+    <div class="section-inner reveal">
+        <p class="section-label">AI Studio</p>
+        <h2 class="section-title">What Creators Are Making</h2>
+        <p class="section-sub">Tracks born from heritage — listen to what the NepCulture AI Studio can create.</p>
+        <div class="showcase-grid">
+            <div class="showcase-card">
+                <p class="sc-genre">Hip Hop · Aggressive</p>
+                <h3 class="sc-title">Gorkhali Rage</h3>
+                <p class="sc-meta">120 BPM · E Minor · AI Composed</p>
+                <span class="sc-tag">Rap</span><span class="sc-tag">Nepali</span>
+                <br>
+                <button class="sc-play" onclick="showToast && showToast('Play from the Studio page after signing in.', 'purple')">▶ Preview</button>
+            </div>
+            <div class="showcase-card">
+                <p class="sc-genre">Folk · Romantic</p>
+                <h3 class="sc-title">Khola Ko Kinara</h3>
+                <p class="sc-meta">88 BPM · C Major · AI Composed</p>
+                <span class="sc-tag">Folk</span><span class="sc-tag">Adhunik</span>
+                <br>
+                <button class="sc-play" onclick="showToast && showToast('Play from the Studio page after signing in.', 'purple')">▶ Preview</button>
+            </div>
+            <div class="showcase-card">
+                <p class="sc-genre">Lofi · Melancholic</p>
+                <h3 class="sc-title">Kathmandu Drift</h3>
+                <p class="sc-meta">75 BPM · A Minor · AI Composed</p>
+                <span class="sc-tag">Lofi</span><span class="sc-tag">Chill</span>
+                <br>
+                <button class="sc-play" onclick="showToast && showToast('Play from the Studio page after signing in.', 'purple')">▶ Preview</button>
+            </div>
+            <div class="showcase-card">
+                <p class="sc-genre">Bhajan · Spiritual</p>
+                <h3 class="sc-title">Pashupatinath</h3>
+                <p class="sc-meta">95 BPM · D Major · AI Composed</p>
+                <span class="sc-tag">Devotional</span><span class="sc-tag">Sacred</span>
+                <br>
+                <button class="sc-play" onclick="showToast && showToast('Play from the Studio page after signing in.', 'purple')">▶ Preview</button>
+            </div>
+        </div>
+        <div style="text-align:center; margin-top: 40px;">
+            <a href="music.html" class="btn-hero-primary">Create Your Own Track →</a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ 6. CULTURAL QUOTE ═══════════════════ -->
+<section class="quote-section reveal" id="quote">
+    <span class="quote-icon">"</span>
+    <p class="quote-text" id="rotating-quote">
+        "Maanchhe le maanchhe lai chine pachi jaat haina, insaaniyat thulo hunchha."
+    </p>
+    <p class="quote-attr" id="quote-attr">— Laxmi Prasad Devkota, Muna Madan</p>
+    <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 10px; font-style: italic;">"After humans recognize each other as humans, caste matters not — humanity is greater."</p>
+</section>
+
+<!-- ═══════════════════ 7. COMMUNITY ═══════════════════ -->
+<section class="community-section reveal" id="community">
+    <div class="community-inner">
+        <p class="section-label" style="text-align:center;">Collective Heritage</p>
+        <h2 class="section-title" style="text-align:center; max-width:none;">Culture Is Built Together</h2>
+        <p class="section-sub" style="margin: 0 auto 0; text-align:center; max-width: 580px;">NepCulture is more than a platform — it is a living archive maintained by every creator, reader, and listener who cares about Nepali heritage.</p>
+        <div class="community-grid">
+            <div class="community-card">
+                <span class="cc-icon">🎵</span>
+                <h3>Create &amp; Contribute</h3>
+                <p>Use the AI Studio to compose original Nepali tracks and add your voice to the heritage.</p>
+            </div>
+            <div class="community-card">
+                <span class="cc-icon">📚</span>
+                <h3>Preserve Literature</h3>
+                <p>Save books to your archive, annotate with personal notes, and build a living reading list.</p>
+            </div>
+            <div class="community-card">
+                <span class="cc-icon">🌐</span>
+                <h3>Share Your Footprint</h3>
+                <p>Export your cultural collection, share tracks, and connect the diaspora to its roots.</p>
+            </div>
+        </div>
+        <div style="text-align:center; margin-top: 48px;">
+            <a href="login.html" class="btn-hero-primary" style="display:inline-block;">Join NepCulture — It's Free</a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ 8. FOOTER ═══════════════════ -->
+<footer class="site-footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="fb-logo">♪ NepCulture</div>
+            <p>The Heritage Engine — preserving Nepal's arts, literature, and music for the digital age and generations beyond.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Platform</h4>
+            <a href="music.html">AI Studio</a>
+            <a href="culturallibrary.html">Cultural Library</a>
+            <a href="myfavourites.html">My Identity</a>
+            <a href="login.html">Sign In</a>
+        </div>
+        <div class="footer-col">
+            <h4>Explore</h4>
+            <a href="culturallibrary.html">Literature</a>
+            <a href="culturallibrary.html">Folklore</a>
+            <a href="culturallibrary.html">Poetry</a>
+            <a href="culturallibrary.html">History</a>
+        </div>
+        <div class="footer-col">
+            <h4>About</h4>
+            <a href="#">About NepCulture</a>
+            <a href="#">Contact</a>
+            <a href="#">GitHub</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2025 NepCulture. All rights reserved.</span>
+        <span class="footer-credits">Built with ♥ for <span>Nepali Heritage</span></span>
+    </div>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script>
+// Update nav if logged in
+(function() {
+    if (window.NepAuth && window.NepAuth.isLoggedIn()) {
+        const s = NepAuth.getSession();
+        const cta = document.getElementById('nav-cta');
+        if (cta) {
+            cta.innerHTML = `
+                <span style="color:var(--text-muted); font-size:0.85rem;">Hello, ${s.displayName}</span>
+                ${NepAuth.isAdmin() ? '<span style="background:var(--gold);color:#000;font-size:0.7rem;padding:3px 8px;border-radius:10px;font-weight:700;">ADMIN</span>' : ''}
+                <button onclick="NepAuth.logout()" style="background:transparent;border:1px solid #333;color:#888;padding:8px 16px;border-radius:20px;font-size:0.82rem;cursor:pointer;">Sign Out</button>
+            `;
+        }
+    }
+})();
+
+// ── Today in Nepali Culture data ──
+const DAILY_FACTS = [
+    { category: 'Literature', text: 'Laxmi Prasad Devkota, known as Mahakavi, wrote Muna Madan in 1936 using the Jhyaure folk meter — Nepal\'s most beloved poem.', source: '— Heritage Archives' },
+    { category: 'Music', text: 'The Sarangi, carved from a single block of wood, served as Nepal\'s oral newspaper — Gandharba musicians traveled village to village carrying news in song.', source: '— Gandharba Tradition' },
+    { category: 'History', text: 'Prithvi Narayan Shah unified Nepal in 1768–69, famously describing Nepal as a "yam between two boulders" — China and British India.', source: '— Divya Upadesh' },
+    { category: 'Art', text: 'Newari craftsmen of the Kathmandu Valley created the Pashupatinath Temple\'s famous erotic art to protect against lightning — Kumari Goddesses are said to be repelled by it.', source: '— Temple Lore' },
+    { category: 'Language', text: 'Nepal is home to over 123 languages. Newari (Nepal Bhasa) has a literary tradition dating back to the 12th century, predating most European vernacular literatures.', source: '— Linguistic Survey of Nepal' },
+    { category: 'Festival', text: 'Dashain, Nepal\'s longest festival, celebrates the goddess Durga\'s victory over the demon Mahishasura. The tika (forehead blessing) from elders is its most sacred ritual.', source: '— Hindu Calendar Tradition' },
+    { category: 'Architecture', text: 'Bhaktapur\'s Nyatapola Temple, built in 1702, stands on five terraced plinths and is Nepal\'s tallest pagoda — constructed to stand against earthquakes through flexible joinery.', source: '— Valley Architecture Records' },
+];
+
+const SIDE_ITEMS = [
+    { icon: '🏔️', title: 'Mount Everest', text: 'Called Sagarmatha (forehead of the sky) in Nepali — local Sherpa communities have lived in its shadow for centuries.' },
+    { icon: '🎋', title: 'Madal Drum', text: 'The Madal is Nepal\'s national drum, appearing at every folk celebration from Teej to Tihar.' },
+    { icon: '🌸', title: 'Rhododendron', text: 'Lali Gurans (rhododendron) is Nepal\'s national flower, blooming across hillside forests every spring.' },
+    { icon: '📖', title: 'Bhanubhakta Acharya', text: 'The first poet to translate the Ramayana into Nepali vernacular, making sacred literature accessible to common people.' },
+];
+
+function initTodaySection() {
+    const now = new Date();
+    const dateEl = document.getElementById('today-date');
+    if (dateEl) dateEl.innerText = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+    const idx = now.getDate() % DAILY_FACTS.length;
+    const fact = DAILY_FACTS[idx];
+    const catEl = document.getElementById('fact-category');
+    const txtEl = document.getElementById('fact-text');
+    const srcEl = document.getElementById('fact-source');
+    if (catEl) catEl.innerText = fact.category;
+    if (txtEl) txtEl.innerText = fact.text;
+    if (srcEl) srcEl.innerText = fact.source;
+
+    const listEl = document.getElementById('today-list');
+    if (listEl) {
+        SIDE_ITEMS.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'today-item';
+            div.innerHTML = `<div class="today-item-icon">${item.icon}</div><div><h4>${item.title}</h4><p>${item.text}</p></div>`;
+            div.onclick = () => window.location.href = 'culturallibrary.html';
+            listEl.appendChild(div);
+        });
+    }
+}
+
+// ── Rotating quotes ──
+const QUOTES = [
+    { text: '"Maanchhe le maanchhe lai chine pachi jaat haina, insaaniyat thulo hunchha."', attr: '— Laxmi Prasad Devkota, Muna Madan', trans: '"After humans recognize each other as humans, caste matters not — humanity is greater."' },
+    { text: '"Nepal is a garden of four castes and thirty-six sub-castes."', attr: '— Prithvi Narayan Shah, Divya Upadesh (1774)', trans: '' },
+    { text: '"Karnali is not just a river — it is the memory of everyone who ever loved and lost."', attr: '— Buddhisagar, Karnali Blues (2010)', trans: '' },
+];
+
+// ── Scroll reveal ──
+function initScrollReveal() {
+    const els = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    els.forEach(el => obs.observe(el));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initTodaySection();
+    initScrollReveal();
+});
+</script>
+</body>
+</html>

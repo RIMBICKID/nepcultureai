@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Identity | NepCulture</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+
+        /* Dashboard header */
+        .dashboard {
+            background: var(--glass-surface);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 30px 36px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; box-shadow: var(--glass-shadow);
+        }
+        .stat-box { text-align: center; }
+        .stat-num  { font-size: 2.5rem; color: var(--gold); font-family: 'Playfair Display', serif; }
+        .stat-label{ font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Level card */
+        .level-card { background: rgba(255,255,255,0.04); padding: 20px; border-radius: 8px; border: 1px solid var(--glass-border); min-width: 280px; backdrop-filter: blur(8px); }
+        .level-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
+        .lvl-bar-bg   { height: 6px; background: #333; border-radius: 3px; }
+        .lvl-bar-fill { height: 100%; background: var(--crimson); width: 45%; border-radius: 3px; transition: width 0.6s ease; }
+
+        /* Playback status bar */
+        #playback-bar {
+            display: none;
+            background: rgba(110, 0, 255, 0.12);
+            border: 1px solid var(--accent-1);
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+            color: var(--accent-1);
+            align-items: center;
+            gap: 12px;
+        }
+        #playback-bar.visible { display: flex; animation: fadeInUp 0.25s ease; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 20px; border-bottom: 1px solid #333; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-btn {
+            background: none; border: none; color: var(--text-muted);
+            font-size: 1rem; padding: 10px 0; cursor: pointer;
+            border-bottom: 2px solid transparent; transition: var(--transition);
+        }
+        .tab-btn:hover  { color: white; }
+        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+        .tab-btn:focus-visible { outline: 2px solid var(--accent-1); outline-offset: 4px; }
+
+        /* Grid */
+        .vault-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .vault-card {
+            background: var(--glass-surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 24px; border-radius: 12px;
+            border: 1px solid var(--glass-border); transition: var(--transition);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .vault-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: var(--shadow); }
+        .vault-card--selected { border-color: var(--accent-1) !important; background: rgba(110,0,255,0.08); }
+        .vault-card:focus-visible { outline: 2px solid var(--accent-1); outline-offset: 4px; }
+
+        /* Tags */
+        .tag { font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; width: fit-content; margin-bottom: 15px; }
+        .tag.music      { background: rgba(220,20,60,0.2);  color: var(--crimson); border: 1px solid var(--crimson); }
+        .tag.literature { background: rgba(218,165,32,0.2); color: var(--gold);    border: 1px solid var(--gold); }
+
+        .offline-badge { display: inline-block; font-size: 0.7rem; background: rgba(110,0,255,0.2); color: var(--accent-1); border: 1px solid var(--accent-1); padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+
+        .style-input { background: var(--bg-glass); border: 1px solid var(--border-light); color: white; padding: 15px; border-radius: 8px; outline: none; }
+        .style-input:focus { border-color: var(--gold); }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); grid-column: 1 / -1; }
+
+        /* Quick Access banner */
+        .quick-access-banner {
+            background: linear-gradient(135deg, rgba(110,0,255,0.15), rgba(218,165,32,0.1));
+            border: 1px solid var(--accent-1);
+            border-radius: 12px; padding: 20px 24px;
+            margin-bottom: 30px;
+            display: flex; align-items: center; gap: 20px;
+        }
+        .quick-access-banner h3 { color: var(--accent-1); margin-bottom: 4px; font-size: 1rem; }
+        .quick-access-banner p  { color: var(--text-muted); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="index.html" class="serif" style="font-size: 1.5rem; color: var(--gold); text-decoration: none;">NepCulture</a>
+        <a href="music.html"  class="btn-outline" style="font-size: 0.9rem; text-decoration: none;">Studio</a>
+    </div>
+
+    <div class="container">
+
+        <!-- Dashboard summary -->
+        <div class="dashboard">
+            <div>
+                <h2 class="serif">Your Cultural Footprint</h2>
+                <p style="color: var(--text-muted); margin-top: 5px;">Persona: Modern Heritage Creator</p>
+            </div>
+            <div style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap;">
+                <div class="stat-box">
+                    <div class="stat-num" id="total-items">0</div>
+                    <div class="stat-label">Favorites</div>
+                </div>
+                <div class="level-card">
+                    <div class="level-header">
+                        <span style="color: var(--gold);">Level 2: Story Seeker</span>
+                        <span style="color: #888;">450 / 1000 XP</span>
+                    </div>
+                    <div class="lvl-bar-bg"><div class="lvl-bar-fill"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Access banner -->
+        <div class="quick-access-banner" aria-label="Quick Access — recent activity">
+            <div style="font-size: 2rem;" aria-hidden="true">⚡</div>
+            <div>
+                <h3>Quick Access</h3>
+                <p>Switch to the <strong>Quick Access</strong> tab to see your 5 most recently favorited items in one place.</p>
+            </div>
+        </div>
+
+        <!-- Playback status bar -->
+        <div id="playback-bar" role="status" aria-live="polite">
+            <span aria-hidden="true">🎵</span>
+            <span id="playback-label">Now Playing: —</span>
+            <button id="playback-stop" style="margin-left:auto; background: none; border: 1px solid var(--accent-1); color: var(--accent-1); padding: 4px 12px; border-radius: 12px; cursor: pointer; font-size: 0.8rem;">Stop</button>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="tabs" role="tablist" aria-label="Favorites filter">
+            <button class="tab-btn active" data-tab="all"       role="tab" aria-selected="true"  tabindex="0">All Favorites</button>
+            <button class="tab-btn"        data-tab="music"     role="tab" aria-selected="false" tabindex="0">🎵 Music</button>
+            <button class="tab-btn"        data-tab="books"     role="tab" aria-selected="false" tabindex="0">📚 Books</button>
+            <button class="tab-btn"        data-tab="playlists" role="tab" aria-selected="false" tabindex="0">⚡ Quick Access</button>
+        </div>
+
+        <!-- Favorites grid -->
+        <div class="vault-grid" id="vault-grid" role="region" aria-label="Favorites vault">
+        </div>
+
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/collections.js"></script>
+    <script>
+      if (!NepAuth.requireAuth()) { /* redirected */ }
+      (function(){
+        var s = NepAuth.getSession();
+        if (!s) return;
+        var nav = document.querySelector(".nav");
+        if (nav) {
+          var logoutBtn = document.createElement("button");
+          logoutBtn.onclick = NepAuth.logout;
+          logoutBtn.style.cssText = "background:transparent;border:1px solid #333;color:#888;padding:8px 16px;border-radius:20px;font-size:0.82rem;cursor:pointer;font-family:DM Sans,sans-serif;";
+          logoutBtn.innerText = "Sign Out";
+          nav.appendChild(logoutBtn);
+        }
+      })();
+    </script>
+</body>
+</html>

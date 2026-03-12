@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — NepCulture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #DAA520; --crimson: #DC143C; --accent: #6E00FF;
+      --bg: #08080d; --card: rgba(15,15,22,0.97); --border: rgba(255,255,255,0.08);
+      --text: #ede8e0; --muted: #3a3530;
+    }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: stretch; min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Animated background ─────────────────────────────────── */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 15% 20%, rgba(110,0,255,0.1)  0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 85% 80%, rgba(220,20,60,0.08)  0%, transparent 65%),
+        radial-gradient(ellipse 70% 70% at 50% 50%, rgba(218,165,32,0.04) 0%, transparent 70%);
+    }
+
+    /* Decorative rotating circles */
+    .orbit { position: fixed; border-radius: 50%; border: 1px solid rgba(218,165,32,0.06); pointer-events: none; }
+    .orbit-1 { width: 700px; height: 700px; top: 50%; left: 50%; transform: translate(-50%,-50%); animation: orb 60s linear infinite; }
+    .orbit-2 { width: 480px; height: 480px; top: 50%; left: 50%; transform: translate(-50%,-50%); animation: orb 40s linear infinite reverse; }
+    .orbit-3 { width: 280px; height: 280px; top: 50%; left: 50%; transform: translate(-50%,-50%); animation: orb 25s linear infinite; }
+    @keyframes orb { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+    /* ── Layout ──────────────────────────────────────────────── */
+    .layout { position: relative; z-index: 10; display: flex; width: 100%; min-height: 100vh; }
+
+    /* ── Left: Brand panel ───────────────────────────────────── */
+    .brand {
+      flex: 1; display: flex; flex-direction: column; justify-content: center;
+      padding: 60px 64px; border-right: 1px solid var(--border);
+    }
+    .brand-logo {
+      font-family: 'Playfair Display', serif; font-size: 3.4rem;
+      color: var(--gold); letter-spacing: 2px; line-height: 1;
+      margin-bottom: 6px;
+      animation: up 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .brand-rule {
+      width: 56px; height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin: 20px 0; opacity: 0.6;
+      animation: up 0.7s 0.08s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .brand-desc {
+      font-size: 1rem; color: #4a4540; line-height: 1.85; max-width: 400px;
+      animation: up 0.7s 0.14s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .features {
+      margin-top: 52px; display: flex; flex-direction: column; gap: 20px;
+      animation: up 0.7s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .feature { display: flex; align-items: flex-start; gap: 14px; }
+    .feat-icon {
+      width: 38px; height: 38px; flex-shrink: 0;
+      background: rgba(218,165,32,0.07); border: 1px solid rgba(218,165,32,0.14);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .feat-title { font-size: 0.86rem; color: #5a5040; font-weight: 600; margin-bottom: 2px; }
+    .feat-desc  { font-size: 0.78rem; color: #2e2820; line-height: 1.5; }
+
+    .brand-footer {
+      margin-top: auto; padding-top: 40px;
+      font-size: 0.72rem; color: #252020; line-height: 1.8;
+      animation: up 0.7s 0.26s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    /* ── Right: Auth form ────────────────────────────────────── */
+    .auth-wrap {
+      width: 480px; flex-shrink: 0;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 60px 56px;
+    }
+    .auth-box { animation: up 0.6s 0.05s cubic-bezier(0.22,1,0.36,1) both; }
+
+    /* Already-logged-in banner */
+    #session-banner {
+      display: none;
+      background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.2);
+      border-radius: 12px; padding: 14px 18px; margin-bottom: 22px;
+      font-size: 0.84rem; color: #4ade80; line-height: 1.5;
+    }
+    #session-banner a { color: #4ade80; }
+
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+    .tab {
+      flex: 1; background: none; border: none; color: #3a3530;
+      font-size: 0.88rem; padding: 10px 0; cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      font-family: 'DM Sans', sans-serif; font-weight: 600;
+    }
+    .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab:hover:not(.active) { color: #7a6040; }
+
+    /* OAuth buttons */
+    .oauth {
+      width: 100%; display: flex; align-items: center; justify-content: center;
+      gap: 10px; background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border); color: #888;
+      padding: 12px 16px; border-radius: 12px;
+      font-size: 0.87rem; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: all 0.18s; margin-bottom: 10px;
+    }
+    .oauth:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #ccc; transform: translateY(-1px); }
+
+    /* Divider */
+    .or { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+    .or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .or span { color: #252020; font-size: 0.73rem; white-space: nowrap; }
+
+    /* Fields */
+    .field { margin-bottom: 16px; }
+    label { display: block; font-size: 0.72rem; color: #4a4540; margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+    input[type=text], input[type=password], input[type=email] {
+      width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      color: var(--text); padding: 13px 15px; border-radius: 10px;
+      outline: none; font-size: 0.9rem; font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    input:focus { border-color: rgba(218,165,32,0.5); background: rgba(255,255,255,0.06); }
+    input::placeholder { color: #252020; }
+
+    /* Remember me */
+    .remember { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; cursor: pointer; }
+    .remember span { font-size: 0.81rem; color: #3a3530; }
+    .remember input { accent-color: var(--gold); cursor: pointer; }
+
+    /* Submit */
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #DC143C 0%, #8a001c 100%);
+      color: #fff; border: none; padding: 14px;
+      border-radius: 30px; font-size: 0.92rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 4px 24px rgba(220,20,60,0.3);
+    }
+    .btn-submit:hover:not(:disabled) { background: linear-gradient(135deg,#b80f2a,#6a0014); box-shadow: 0 6px 32px rgba(220,20,60,0.45); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: wait; transform: none; }
+    .btn-submit.ok { background: linear-gradient(135deg,#16a34a,#0a5c28) !important; box-shadow: 0 4px 24px rgba(22,163,74,0.3) !important; }
+
+    /* Messages */
+    .msg-err { color: #f87171; font-size: 0.8rem; text-align: center; margin-top: 12px; min-height: 20px; }
+    .msg-ok  { color: #4ade80; font-size: 0.8rem; text-align: center; margin-top: 12px; min-height: 20px; }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .sp {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.55s linear infinite;
+      vertical-align: middle; margin-right: 6px;
+    }
+
+    /* Animations */
+    @keyframes up { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+    .shake { animation: shake 0.35s ease; }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .layout { flex-direction: column; }
+      .brand  { display: none; }
+      .auth-wrap { width: 100%; padding: 40px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="orbit orbit-1"></div>
+<div class="orbit orbit-2"></div>
+<div class="orbit orbit-3"></div>
+
+<div class="layout">
+
+  <!-- ── BRAND PANEL ──────────────────────────────────────────── -->
+  <div class="brand">
+    <div class="brand-logo">NepCulture</div>
+    <div class="brand-rule"></div>
+    <p class="brand-desc">
+      The bridge between ancient Nepali heritage and digital eternity.
+      Create music, explore archives, preserve culture — all in one workspace.
+    </p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feat-icon">🎚️</div>
+        <div>
+          <div class="feat-title">AI Music Studio</div>
+          <div class="feat-desc">Generate Folk, Rap, Lofi and 16 other genres with a real-time synthesizer — no audio files needed.</div>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feat-icon">📜</div>
+        <div>
+          <div class="feat-title">Cultural Library</div>
+          <div class="feat-desc">22 curated works from Devkota to Buddhisagar, with an AI guide trained on heritage archives.</div>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feat-icon">🔖</div>
+        <div>
+          <div class="feat-title">My Identity</div>
+          <div class="feat-desc">Track your favorites, annotate discoveries, and build your personal cultural footprint.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-footer">
+      Sign in once. Stay signed in.<br>
+      Your session persists across all pages until you choose to sign out.
+    </div>
+  </div>
+
+  <!-- ── AUTH PANEL ──────────────────────────────────────────── -->
+  <div class="auth-wrap">
+    <div class="auth-box">
+
+      <!-- Session active banner -->
+      <div id="session-banner">
+        ✓ You're signed in as <strong id="sname"></strong>.
+        <a href="index.html" style="margin-left:8px;">Continue to NepCulture →</a>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" id="tab-in" onclick="switchTab('in')">Sign In</button>
+        <button class="tab"        id="tab-up" onclick="switchTab('up')">Create Account</button>
+      </div>
+
+      <!-- ── SIGN IN ─────────────────────────────────────── -->
+      <div id="form-in">
+        <button class="oauth" id="btn-google">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </button>
+        <button class="oauth" id="btn-facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+          Continue with Facebook
+        </button>
+        <div class="or"><span>or sign in with username</span></div>
+        <div class="field">
+          <label for="si-user">Username</label>
+          <input type="text" id="si-user" placeholder="your username" autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="si-pass">Password</label>
+          <input type="password" id="si-pass" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <label class="remember">
+          <input type="checkbox" id="si-rem" checked>
+          <span>Remember me for 30 days</span>
+        </label>
+        <button class="btn-submit" id="btn-login">Sign In</button>
+        <div class="msg-err" id="si-err"></div>
+      </div>
+
+      <!-- ── REGISTER ──────────────────────────────────────── -->
+      <div id="form-up" style="display:none;">
+        <div class="field">
+          <label for="su-name">Your Name</label>
+          <input type="text" id="su-name" placeholder="Hari Prasad Sharma">
+        </div>
+        <div class="field">
+          <label for="su-user">Username</label>
+          <input type="text" id="su-user" placeholder="choose a username" autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="su-pass">Password</label>
+          <input type="password" id="su-pass" placeholder="min 6 characters" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label for="su-pass2">Confirm Password</label>
+          <input type="password" id="su-pass2" placeholder="repeat password" autocomplete="new-password">
+        </div>
+        <button class="btn-submit" id="btn-register">Create Account</button>
+        <div class="msg-err" id="su-err"></div>
+        <div class="msg-ok"  id="su-ok"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script>
+(function () {
+  // If a valid session already exists, show the banner and auto-redirect
+  const sess = NepAuth.getSession();
+  if (sess) {
+    document.getElementById('session-banner').style.display = 'block';
+    document.getElementById('sname').textContent = sess.displayName || sess.username;
+    setTimeout(() => window.location.replace('index.html'), 1600);
+    return; // don't wire form events — not needed
+  }
+
+  // ── Helpers ───────────────────────────────────────────────
+  function switchTab(t) {
+    document.getElementById('form-in').style.display = t === 'in' ? 'block' : 'none';
+    document.getElementById('form-up').style.display = t === 'up' ? 'block' : 'none';
+    document.getElementById('tab-in').classList.toggle('active', t === 'in');
+    document.getElementById('tab-up').classList.toggle('active', t === 'up');
+    document.getElementById('si-err').textContent = '';
+    document.getElementById('su-err').textContent = '';
+    document.getElementById('su-ok').textContent  = '';
+  }
+  window.switchTab = switchTab;
+
+  function shakeBox() {
+    const b = document.querySelector('.auth-box');
+    b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+  }
+
+  function setLoading(btn, on, def) {
+    if (on) { btn._t = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="sp"></span>Signing in…'; }
+    else     { btn.disabled = false; btn.innerHTML = btn._t || def || btn.innerHTML; }
+  }
+
+  function onSuccess(btn) {
+    btn.disabled = true;
+    btn.innerHTML = '✓ Signed in — welcome!';
+    btn.classList.add('ok');
+    setTimeout(() => window.location.replace('index.html'), 700);
+  }
+
+  // ── Google OAuth ───────────────────────────────────────────
+  document.getElementById('btn-google').addEventListener('click', () => {
+    NepAuth.loginOAuth('Google').then(r => {
+      if (r.success) onSuccess(document.getElementById('btn-login'));
+      else document.getElementById('si-err').textContent = r.error;
+    });
+  });
+
+  // ── Facebook OAuth ─────────────────────────────────────────
+  document.getElementById('btn-facebook').addEventListener('click', () => {
+    NepAuth.loginOAuth('Facebook').then(r => {
+      if (r.success) onSuccess(document.getElementById('btn-login'));
+      else document.getElementById('si-err').textContent = r.error;
+    });
+  });
+
+  // ── Sign In ────────────────────────────────────────────────
+  function doLogin() {
+    const u   = document.getElementById('si-user').value.trim();
+    const p   = document.getElementById('si-pass').value;
+    const rem = document.getElementById('si-rem').checked;
+    const err = document.getElementById('si-err');
+    const btn = document.getElementById('btn-login');
+    err.textContent = '';
+    setLoading(btn, true, 'Sign In');
+    setTimeout(() => {
+      const r = NepAuth.login(u, p, rem);
+      if (r.success) {
+        onSuccess(btn);
+      } else {
+        setLoading(btn, false, 'Sign In');
+        err.textContent = r.error;
+        shakeBox();
+      }
+    }, 360);
+  }
+
+  document.getElementById('btn-login').addEventListener('click', doLogin);
+  document.getElementById('si-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('si-user').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('si-pass').focus(); });
+
+  // ── Register ───────────────────────────────────────────────
+  function doRegister() {
+    const name = document.getElementById('su-name').value.trim();
+    const u    = document.getElementById('su-user').value.trim();
+    const p    = document.getElementById('su-pass').value;
+    const p2   = document.getElementById('su-pass2').value;
+    const err  = document.getElementById('su-err');
+    const ok   = document.getElementById('su-ok');
+    const btn  = document.getElementById('btn-register');
+    err.textContent = ''; ok.textContent = '';
+
+    if (p !== p2) { err.textContent = 'Passwords do not match.'; shakeBox(); return; }
+
+    setLoading(btn, true, 'Create Account');
+    setTimeout(() => {
+      const r = NepAuth.register(u, p, name);
+      if (r.success) {
+        btn.disabled = true; btn.innerHTML = '✓ Account created!'; btn.classList.add('ok');
+        ok.textContent = 'Welcome to NepCulture 🎉 Redirecting…';
+        setTimeout(() => window.location.replace('index.html'), 900);
+      } else {
+        setLoading(btn, false, 'Create Account');
+        err.textContent = r.error;
+        shakeBox();
+      }
+    }, 420);
+  }
+
+  document.getElementById('btn-register').addEventListener('click', doRegister);
+  document.getElementById('su-pass2').addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+
+})();
+</script>
+</body>
+</html>

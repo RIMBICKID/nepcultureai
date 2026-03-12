@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NepCulture Studio</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="dashboard-mode">
+
+<div class="app-layout" role="main">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="app-sidebar" role="navigation" aria-label="Studio sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon gold-text" aria-hidden="true">♪</div>
+            <h3>NepCulture</h3>
+        </div>
+
+        <div class="profile-card" aria-label="User profile" id="sidebar-profile">
+            <div class="profile-avatar" aria-hidden="true" id="profile-avatar">NC</div>
+            <div class="profile-info">
+                <h4 id="profile-name">Creator Mode</h4>
+                <span id="profile-role">Free Plan</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Studio navigation">
+            <a href="music.html"           class="active" aria-current="page">Studio</a>
+            <a href="myfavourites.html">My Favorites</a>
+            <a href="culturallibrary.html">Library</a>
+        </nav>
+
+        <!-- Admin panel link (only shown to admin) -->
+        <div id="admin-panel-link" style="display:none; margin: 8px 0;">
+            <a href="#" id="admin-stats-btn" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:rgba(218,165,32,0.1);border:1px solid rgba(218,165,32,0.3);border-radius:8px;color:var(--gold);font-size:0.82rem;text-decoration:none;" onclick="showAdminPanel(); return false;">
+                ⚙️ Admin Panel
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="credits-box" aria-label="Credits remaining">
+                <span>Credits</span>
+                <strong>12</strong>
+            </div>
+            <button class="btn-upgrade" aria-label="Upgrade to Pro plan">Upgrade to Pro</button>
+            <button onclick="NepAuth.logout()" style="width:100%;background:transparent;border:1px solid #333;color:#666;padding:9px;border-radius:8px;font-size:0.8rem;cursor:pointer;margin-top:6px;font-family:'DM Sans',sans-serif;">Sign Out</button>
+        </div>
+    </aside>
+
+    <!-- ================= INPUT PANEL ================= -->
+    <section class="app-input-panel" aria-label="Track creation panel">
+
+        <div class="input-header">
+            <h2>Create Track</h2>
+            <div class="badge">AI Composer <span class="badge-new">NEW</span></div>
+        </div>
+
+        <!-- Custom Track Title -->
+        <div class="input-group">
+            <label for="custom-title">Track Title</label>
+            <input type="text" id="custom-title" class="style-input" placeholder="Name your track… (optional)" aria-label="Custom track title" maxlength="80">
+        </div>
+
+        <!-- Lyrics -->
+        <div class="input-group">
+            <label for="lyrics-input">Lyrics</label>
+            <textarea id="lyrics-input" placeholder="Write lyrics here, or click Assist for a genre-aware suggestion…" aria-label="Track lyrics" maxlength="5000"></textarea>
+            <div class="textarea-footer">
+                <button class="btn-assistant" aria-label="Get lyric suggestion">Assist</button>
+                <div class="char-count" aria-live="polite">
+                    <span id="word-count">0</span> words |
+                    <span id="char-count-val">0</span>/5000
+                </div>
+            </div>
+        </div>
+
+        <!-- Genre -->
+        <div class="input-group">
+            <label for="genre-select">Genre</label>
+            <select id="genre-select" class="style-input" aria-label="Music genre">
+                <optgroup label="Street &amp; Urban">
+                    <option value="Rap">Hip Hop &amp; Rap</option>
+                    <option value="Rock">Rock &amp; Alternative</option>
+                    <option value="RnB">R&amp;B &amp; Soul</option>
+                    <option value="Jazz">Jazz &amp; Blues</option>
+                </optgroup>
+                <optgroup label="Nepali Traditional">
+                    <option value="Folk">Folk &amp; Adhunik</option>
+                    <option value="Tamang">Tamang Selo</option>
+                    <option value="Newari">Newari Traditional</option>
+                    <option value="Bhajan">Bhajan &amp; Devotional</option>
+                    <option value="Classical">Classical Ragas</option>
+                    <option value="Dohori">Dohori</option>
+                </optgroup>
+                <optgroup label="Modern">
+                    <option value="Pop">Pop &amp; Electronic</option>
+                    <option value="Lofi">Lofi</option>
+                    <option value="Fusion">Fusion</option>
+                    <option value="Ambient">Ambient &amp; Experimental</option>
+                </optgroup>
+                <optgroup label="Cinematic">
+                    <option value="Epic">Epic &amp; Triumphant</option>
+                    <option value="Suspense">Suspense &amp; Mystery</option>
+                </optgroup>
+                <optgroup label="Emotional">
+                    <option value="Chill">Relaxing &amp; Chill</option>
+                    <option value="Happy">Happy &amp; Vibrant</option>
+                    <option value="Sad">Sad &amp; Melancholy</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <!-- Mood -->
+        <div class="input-group">
+            <label for="mood-select">Mood</label>
+            <select id="mood-select" class="style-input" aria-label="Track mood">
+                <optgroup label="Intense">
+                    <option value="Aggressive">Aggressive</option>
+                    <option value="Rebellious">Rebellious</option>
+                    <option value="Passionate">Passionate</option>
+                    <option value="Triumphant">Triumphant</option>
+                </optgroup>
+                <optgroup label="Introspective">
+                    <option value="Reflective">Reflective</option>
+                    <option value="Melancholic">Melancholic</option>
+                    <option value="Nostalgic">Nostalgic</option>
+                    <option value="Longing">Longing</option>
+                    <option value="Mysterious">Mysterious</option>
+                </optgroup>
+                <optgroup label="Positive">
+                    <option value="Uplifting">Uplifting</option>
+                    <option value="Romantic">Romantic</option>
+                    <option value="Playful">Playful</option>
+                    <option value="Peaceful">Peaceful</option>
+                </optgroup>
+                <optgroup label="Sacred">
+                    <option value="Spiritual">Spiritual</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <!-- Tempo -->
+        <div class="input-group">
+            <label for="tempo-input">Tempo (BPM)</label>
+            <input type="number" id="tempo-input" min="40" max="220" value="100" class="style-input" aria-label="Tempo in BPM">
+        </div>
+
+        <!-- Key -->
+        <div class="input-group">
+            <label for="key-select">Key</label>
+            <select id="key-select" class="style-input" aria-label="Musical key">
+                <option>C Major</option>
+                <option>C Minor</option>
+                <option>D Major</option>
+                <option>D Minor</option>
+                <option>E Minor</option>
+                <option>F Major</option>
+                <option>G Major</option>
+                <option>A Major</option>
+                <option>A Minor</option>
+                <option>B Minor</option>
+            </select>
+        </div>
+
+        <!-- Live Feedback -->
+        <div id="live-feedback-box" class="live-feedback" style="display:none;" role="status" aria-live="polite">
+            <span>Lang: <strong id="lang-detect"></strong></span>
+            <span>Mood: <strong id="emotion-detect"></strong></span>
+        </div>
+
+        <!-- Generate -->
+        <button id="btn-generate" class="btn-primary btn-generate" aria-label="Generate track">
+            Generate Track
+        </button>
+
+        <!-- Progress -->
+        <div id="progress-container" class="progress-container" role="status" aria-live="polite">
+            <div class="progress-text" id="progress-text">Rendering…</div>
+            <div class="progress-bar" id="progress-bar-el" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ================= TRACK LIST ================= -->
+    <section class="app-track-list" aria-label="Generated tracks">
+        <div class="track-list-header">
+            <div class="search-box" role="search">
+                <span aria-hidden="true">🔍</span>
+                <input type="text" placeholder="Search by title, genre, lyrics…" aria-label="Search tracks" tabindex="0">
+            </div>
+        </div>
+        <div class="tracks-container" id="track-container" role="list" aria-label="Track list">
+            <p style="color:#777;">No tracks yet.</p>
+        </div>
+    </section>
+
+    <!-- ================= DETAILS PANEL ================= -->
+    <aside class="app-details-panel" aria-label="Track details">
+        <div class="vinyl-container" aria-hidden="true">
+            <div class="vinyl-record" id="vinyl-art">
+                <div class="vinyl-center">NC</div>
+            </div>
+        </div>
+        <div class="track-meta-details">
+            <h3 id="detail-title">No Track Selected</h3>
+            <div class="tag-row" id="detail-tags" style="display:none;">
+                <span class="tag">Generated</span>
+                <span class="tag">AI</span>
+            </div>
+            <div class="track-date" id="detail-date"></div>
+        </div>
+        <div class="lyrics-preview">
+            <div class="lyrics-header"><h4>Lyrics</h4></div>
+            <div class="lyrics-content" id="detail-lyrics" aria-label="Track lyrics"></div>
+        </div>
+    </aside>
+
+</div>
+
+<!-- ================= BOTTOM PLAYER ================= -->
+<div class="app-player-bar" role="region" aria-label="Audio player">
+    <div class="player-controls">
+        <button class="icon-btn" aria-label="Previous track" tabindex="0">⏮</button>
+        <button class="icon-btn play-main" aria-label="Play or pause" tabindex="0">▶</button>
+        <button class="icon-btn" aria-label="Next track" tabindex="0">⏭</button>
+    </div>
+    <div class="player-timeline" aria-label="Playback timeline">
+        <span class="time" aria-label="Current time">0:00</span>
+        <div class="timeline-bar" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+            <div class="timeline-progress"></div>
+        </div>
+        <span class="time" id="player-duration" aria-label="Total duration">3:20</span>
+    </div>
+    <div class="player-actions">
+        <button class="icon-btn" aria-label="Toggle favorite" tabindex="0">♡</button>
+        <button class="icon-btn" aria-label="Download or mark offline" title="Download / Offline" tabindex="0">⬇</button>
+    </div>
+</div>
+
+<!-- Admin Panel Modal -->
+<div id="admin-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9000; display:flex; align-items:center; justify-content:center;" onclick="if(event.target===this)this.style.display='none';">
+    <div style="background:#161619; border:1px solid rgba(218,165,32,0.3); border-radius:16px; padding:40px; max-width:520px; width:90%; position:relative;">
+        <h2 style="font-family:'Playfair Display',serif; color:var(--gold); margin-bottom:8px;">Admin Panel</h2>
+        <p style="color:#888; font-size:0.85rem; margin-bottom:24px;">Platform administration & statistics</p>
+        <div id="admin-content" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:24px;"></div>
+        <div id="admin-users-list" style="background:rgba(0,0,0,0.3); border-radius:8px; padding:16px; max-height:200px; overflow-y:auto; margin-bottom:20px;"></div>
+        <button onclick="document.getElementById('admin-modal').style.display='none'" style="background:transparent;border:1px solid #333;color:#888;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;">Close</button>
+    </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script src="js/audioEngine.js"></script>
+<script src="js/studio.js"></script>
+<script>
+// Auth protection
+if (!NepAuth.requireAuth()) { /* redirect handled */ }
+
+// Update sidebar profile
+(function() {
+    const s = NepAuth.getSession();
+    if (!s) return;
+    const nameEl   = document.getElementById('profile-name');
+    const roleEl   = document.getElementById('profile-role');
+    const avatarEl = document.getElementById('profile-avatar');
+    if (nameEl)   nameEl.innerText   = s.displayName || s.username;
+    if (roleEl)   roleEl.innerText   = s.role === 'admin' ? 'Administrator' : 'Free Plan';
+    if (avatarEl) avatarEl.innerText = (s.displayName || s.username).substring(0,2).toUpperCase();
+
+    if (NepAuth.isAdmin()) {
+        document.getElementById('admin-panel-link').style.display = 'block';
+        if (roleEl) roleEl.style.color = 'var(--gold)';
+    }
+})();
+
+function showAdminPanel() {
+    if (!NepAuth.isAdmin()) return;
+    const modal = document.getElementById('admin-modal');
+    modal.style.display = 'flex';
+    _renderAdminPanel();
+}
+
+function _renderAdminPanel() {
+    const stats    = NepAuth.getStats();
+    const users    = NepAuth.getUsers();
+    const sessions = NepAuth.getSessions();
+    const content  = document.getElementById('admin-content');
+    const userList = document.getElementById('admin-users-list');
+
+    // ── Stats row ────────────────────────────────────────────────────────
+    content.innerHTML = [
+        ['Tracks',    stats.totalTracks,    '#DAA520'],
+        ['Books',     stats.totalBooks,     '#DAA520'],
+        ['Users',     stats.totalUsers,     '#DAA520'],
+        ['Active Sessions', stats.activeSessions, '#22c55e'],
+    ].map(([label, val, col]) => `
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:18px;text-align:center;">
+            <div style="font-size:1.8rem;color:${col};font-family:'Playfair Display',serif;">${val}</div>
+            <div style="font-size:0.72rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:5px;">${label}</div>
+        </div>
+    `).join('');
+
+    // ── Active Sessions ──────────────────────────────────────────────────
+    const activeSess = sessions.filter(s => s.active);
+    const sessHtml = activeSess.length === 0
+        ? '<p style="color:#444;font-size:0.84rem;padding:12px 0;">No active sessions.</p>'
+        : activeSess.map(s => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:0.84rem;color:#ccc;font-weight:600;">${_esc(s.displayName)} <span style="color:#555;font-weight:400;">@${_esc(s.username)}</span></div>
+                    <div style="font-size:0.72rem;color:#444;margin-top:2px;">
+                        via <span style="color:#6a5a30;">${_esc(s.method)}</span> · 
+                        Signed in ${_esc(s.loginTime)} · 
+                        Active ${_esc(s.lastActivity)}
+                    </div>
+                    <div style="font-size:0.68rem;color:#333;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px;" title="${_esc(s.device)}">${_esc(s.device)}</div>
+                </div>
+                <button onclick="adminRevokeSession('${_esc(s.fullToken)}')"
+                    style="background:rgba(220,20,60,0.12);border:1px solid rgba(220,20,60,0.3);color:#f87171;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:0.75rem;flex-shrink:0;margin-left:12px;transition:all 0.2s;"
+                    onmouseover="this.style.background='rgba(220,20,60,0.25)'" onmouseout="this.style.background='rgba(220,20,60,0.12)'"
+                    title="Revoke this session">Revoke</button>
+            </div>`).join('');
+
+    // ── Users table ──────────────────────────────────────────────────────
+    const usersHtml = users.length === 0
+        ? '<p style="color:#444;font-size:0.84rem;padding:12px 0;">No registered users yet.</p>'
+        : users.map(u => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <div>
+                    <div style="font-size:0.84rem;color:${u.disabled?'#555':'#ccc'};font-weight:600;">${_esc(u.displayName||u.username)} <span style="color:#444;font-weight:400;">@${_esc(u.username)}</span>
+                        ${u.disabled ? '<span style="background:rgba(220,20,60,0.15);color:#f87171;font-size:0.68rem;padding:1px 7px;border-radius:10px;margin-left:6px;">DISABLED</span>' : ''}
+                        ${u.oauthProvider ? `<span style="background:rgba(110,0,255,0.15);color:#9a6aff;font-size:0.68rem;padding:1px 7px;border-radius:10px;margin-left:4px;">${_esc(u.oauthProvider)}</span>` : ''}
+                    </div>
+                    <div style="font-size:0.72rem;color:#444;margin-top:2px;">Joined ${new Date(u.createdAt).toLocaleDateString()}</div>
+                </div>
+                <div style="display:flex;gap:6px;flex-shrink:0;margin-left:12px;">
+                    <button onclick="adminKickUser('${_esc(u.username)}')"
+                        style="background:rgba(255,165,0,0.1);border:1px solid rgba(255,165,0,0.25);color:#fbbf24;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:0.72rem;transition:all 0.2s;"
+                        onmouseover="this.style.background='rgba(255,165,0,0.2)'" onmouseout="this.style.background='rgba(255,165,0,0.1)'"
+                        title="Revoke all active sessions for this user">Kick</button>
+                    ${u.disabled
+                        ? `<button onclick="adminEnableUser('${_esc(u.username)}')" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#4ade80;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:0.72rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(34,197,94,0.2)'" onmouseout="this.style.background='rgba(34,197,94,0.1)'" title="Re-enable this account">Enable</button>`
+                        : `<button onclick="adminDisableUser('${_esc(u.username)}')" style="background:rgba(220,20,60,0.1);border:1px solid rgba(220,20,60,0.25);color:#f87171;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:0.72rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(220,20,60,0.2)'" onmouseout="this.style.background='rgba(220,20,60,0.1)'" title="Disable this account">Disable</button>`
+                    }
+                </div>
+            </div>`).join('');
+
+    userList.innerHTML = `
+        <div style="margin-bottom:24px;">
+            <div style="font-size:0.72rem;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+                <span style="display:inline-block;width:8px;height:8px;background:#22c55e;border-radius:50%;box-shadow:0 0 6px #22c55e;"></span>
+                Active Sessions (${activeSess.length})
+            </div>
+            ${sessHtml}
+        </div>
+        <div>
+            <div style="font-size:0.72rem;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">
+                Registered Users (${users.length})
+            </div>
+            ${usersHtml}
+        </div>`;
+}
+
+// Admin action handlers (called from inline onclick)
+function adminRevokeSession(fullToken) {
+    if (!confirm('Revoke this session? The user will be signed out on their next page load.')) return;
+    NepAuth.revokeSession(fullToken);
+    if (typeof showToast === 'function') showToast('Session revoked.', 'crimson');
+    _renderAdminPanel();
+}
+function adminKickUser(username) {
+    if (!confirm('Revoke ALL sessions for @' + username + '?')) return;
+    NepAuth.revokeUserSessions(username);
+    if (typeof showToast === 'function') showToast('All sessions for @' + username + ' revoked.', 'crimson');
+    _renderAdminPanel();
+}
+function adminDisableUser(username) {
+    if (!confirm('Disable account @' + username + '? They will be signed out immediately.')) return;
+    NepAuth.disableUser(username);
+    if (typeof showToast === 'function') showToast('@' + username + ' disabled.', 'crimson');
+    _renderAdminPanel();
+}
+function adminEnableUser(username) {
+    NepAuth.enableUser(username);
+    if (typeof showToast === 'function') showToast('@' + username + ' re-enabled.', 'gold');
+    _renderAdminPanel();
+}
+function _esc(str) {
+    return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
